@@ -4,13 +4,14 @@ import (
 	"betbot/constants"
 	"betbot/util"
 	"log"
+	"os"
 
 	"github.com/gempir/go-twitch-irc/v3"
 	"github.com/gin-gonic/gin"
 )
 
-const botName = "javilobo8"
-const botPass = ""
+var botUser = os.Getenv("TWITCH_CHAT_USER")
+var botPass = os.Getenv("TWITCH_CHAT_PASS")
 
 var client *twitch.Client
 var app *gin.Engine
@@ -57,7 +58,7 @@ func main() {
 	log.Println("Init")
 	gin.SetMode(gin.DebugMode)
 
-	client = twitch.NewClient(botName, botPass)
+	client = twitch.NewClient(botUser, botPass)
 	app = gin.New()
 
 	app.GET("/ping", func(ctx *gin.Context) {
