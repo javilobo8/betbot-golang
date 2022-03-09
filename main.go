@@ -2,6 +2,7 @@ package main
 
 import (
 	"betbot/constants"
+	"betbot/controllers"
 	"betbot/util"
 	"log"
 	"os"
@@ -12,9 +13,6 @@ import (
 
 var botUser = os.Getenv("TWITCH_CHAT_USER")
 var botPass = os.Getenv("TWITCH_CHAT_PASS")
-
-var client *twitch.Client
-var app *gin.Engine
 
 var channels []string = []string{
 	"javilobo8",
@@ -38,16 +36,24 @@ func onConnect() {
 	log.Println("Bot connected")
 }
 
-func initApp() {
+func initApp(app *gin.Engine) {
 	log.Println("pre-app")
+	app.SetTrustedProxies(nil)
+
+	app.GET("/ping", controllers.PingHandlerGET)
+
 	err := app.Run()
 	if err != nil {
 		panic(err)
 	}
 }
 
-func initBot() {
+func initBot(client *twitch.Client) {
 	log.Println("pre-twitch")
+	client.Join(channels...)
+	client.OnConnect(onConnect)
+	client.OnPrivateMessage(onPrivateMessage)
+
 	err := client.Connect()
 	if err != nil {
 		panic(err)
@@ -56,19 +62,9 @@ func initBot() {
 
 func main() {
 	log.Println("Init")
-	gin.SetMode(gin.DebugMode)
+	client := twitch.NewClient(botUser, botPass)
+	app := gin.New()
 
-	client = twitch.NewClient(botUser, botPass)
-	app = gin.New()
-
-	app.GET("/ping", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{"message": "pong"})
-	})
-
-	client.Join(channels...)
-	client.OnConnect(onConnect)
-	client.OnPrivateMessage(onPrivateMessage)
-
-	go initBot()
-	initApp()
+	go initBot(client)
+	initApp(app)
 }
