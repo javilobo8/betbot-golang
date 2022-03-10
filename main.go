@@ -20,7 +20,7 @@ var channels []string = []string{
 
 func onPrivateMessage(message twitch.PrivateMessage) {
 	if message.Message[0] == constants.CommandChar {
-		messages := util.GetMessages(message.Message)
+		messages := util.GetCommandMessages(message.Message)
 
 		switch messages[0] {
 		case constants.BetCommand:
@@ -36,12 +36,14 @@ func onConnect() {
 	log.Println("Bot connected")
 }
 
-func initApp(app *gin.Engine) {
-	log.Println("pre-app")
+func setUpRouter() *gin.Engine {
+	app := gin.New()
 	app.SetTrustedProxies(nil)
-
 	app.GET("/ping", controllers.PingHandlerGET)
+	return app
+}
 
+func initApp(app *gin.Engine) {
 	err := app.Run()
 	if err != nil {
 		panic(err)
@@ -62,8 +64,14 @@ func initBot(client *twitch.Client) {
 
 func main() {
 	log.Println("Init")
-	client := twitch.NewClient(botUser, botPass)
-	app := gin.New()
+	var client *twitch.Client
+	if botUser != "" && botPass != "" {
+		client = twitch.NewClient(botUser, botPass)
+	} else {
+		client = twitch.NewAnonymousClient()
+	}
+
+	app := setUpRouter()
 
 	go initBot(client)
 	initApp(app)
