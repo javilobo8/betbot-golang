@@ -1,6 +1,5 @@
 package constants
 
 const (
-	CommandChar = '!'
-	BetCommand  = "bet"
+	DBName = "go-test"
 )

@@ -32,5 +32,6 @@ require (
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
 	golang.org/x/sys v0.0.0-20200116001909-b77594299b42 // indirect
 	golang.org/x/text v0.3.5 // indirect
+	gopkg.in/validator.v2 v2.0.0-20210331031555-b37d688a7fb0 // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect
 )

@@ -1,12 +1,15 @@
 package util
 
 import (
-	"betbot/constants"
-	"strings"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func GetCommandMessages(message string) []string {
-	msg := strings.Replace(message, string(constants.CommandChar), "", 1)
-	msg = strings.Trim(msg, " ")
-	return strings.Split(msg, " ")
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 4)
+	return string(bytes), err
+}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
